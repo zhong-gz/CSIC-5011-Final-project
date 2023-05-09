@@ -2,29 +2,16 @@ clc
 clear
 close all
 
+t = 1;
+
+scale = 0.5;
+
 load('face.mat');
 X=reshape(Y,[10304,33])';
 
 N = size(X,1);
-
-scale = 0.05;
-
-t = 1; 
-
-sigama = 10;
-
-Xsize = 0.1;
-
-no_dims = 2;
-
-mappedA = compute_mapping(X, 'DiffusionMaps', no_dims,t,sigama);
-
-Xsize = scale*1*(max(mappedA(:,1))-min(mappedA(:,1)));
-Ysize = scale*1.217*(max(mappedA(:,2))-min(mappedA(:,2)));
-
-scatter(mappedA(:,1),mappedA(:,2))
-hold on
-
+X = double(X);
+X = normalize(X,'norm');
 Y = flip(Y,1);
 
 for i = 1:3
@@ -32,8 +19,31 @@ for i = 1:3
 end
 
 for i = 1:N
-    image([mappedA(i,1)-Xsize mappedA(i,1)+Xsize],...
-        [mappedA(i,2)-Ysize mappedA(i,2)+Ysize]...
-        ,faceimg(:,:,:,i));
+    for j = 1:N
+        W(i,j) = exp((-1*norm(X(i,:)-X(j,:))^2)/t);
+    end
+end
+
+Degree = diag(sum(W,2));
+P = Degree\W;
+L = P-eye(N);
+
+[V,D] = eig(L);
+[d,ind] = sort(diag(D),"descend");
+Vs = V(:,ind);
+
+v1 = Vs(:,2);
+[~,ind] = sort(v1,"descend");
+
+figure(1);
+% scatter([0:scale:32*scale],zeros(1,33));
+hold on
+for i = 1:N
+    image([(i-1)*scale i*scale],...
+        [0 0+scale*1.217]...
+        ,faceimg(:,:,:,ind(i)));
     hold on
 end
+xlim([0 33*scale])
+ylim([-0.1 scale*1.217+0.1])
+axis off
