@@ -2,7 +2,7 @@ clc
 clear
 close all
 
-t = 1;
+t = 100;
 
 scale = 0.5;
 
@@ -36,7 +36,6 @@ v1 = Vs(:,2);
 [~,ind] = sort(v1,"descend");
 
 figure(1);
-% scatter([0:scale:32*scale],zeros(1,33));
 hold on
 for i = 1:N
     image([(i-1)*scale i*scale],...
