@@ -10,7 +10,7 @@ scale = 10;
 N = size(X,1);
 X = double(X);
 X = normalize(X,'norm');
-Y = flip(Y,1);
+Y = flip(Y,1); 
 
 for i = 1:3
     faceimg(:,:,i,:) = Y;
